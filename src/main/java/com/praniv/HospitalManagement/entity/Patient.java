@@ -1,5 +1,6 @@
 package com.praniv.HospitalManagement.entity;
 
+import com.praniv.HospitalManagement.entity.Type.BloodGroup;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,11 +40,14 @@ public class Patient {
     @Column(nullable = false)
     private String gender;
 
+    @Enumerated(EnumType.STRING)
+    private BloodGroup bloodGroup;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne
-    private Insurance insurance;
+//    @OneToOne
+//    private Insurance insurance;
 
 }
