@@ -3,6 +3,7 @@ package com.praniv.HospitalManagement.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
+//@ToString
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,7 @@ public class Doctor {
     private String email;
 
     @OneToMany(mappedBy = "doctor")
-    private List<Appointment> appointment;
+    private List<Appointment> appointment = new ArrayList<>();
 
     @ManyToMany(mappedBy = "doctors")
     private Set<Department> departments;

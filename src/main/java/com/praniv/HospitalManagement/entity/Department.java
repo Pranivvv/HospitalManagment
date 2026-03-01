@@ -25,5 +25,10 @@ public class Department {
     private Doctor headDoctor;
 
     @ManyToMany
+    @JoinTable(
+            name = "department_doctors",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+    )
     private Set<Doctor> doctors = new HashSet<>();
 }
