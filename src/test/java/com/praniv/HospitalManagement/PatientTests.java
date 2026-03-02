@@ -24,7 +24,7 @@ public class PatientTests {
     @Test
     public void getPatientTest(){
 //        List<Patient> allPatient = patientRepository.findAll();
-        Page<Patient> allPatient = patientRepository.findAllPatient(PageRequest.of(1, 2, Sort.by("name")));
+        Page<Patient> allPatient = patientRepository.findAllPatients(PageRequest.of(1, 2, Sort.by("name")));
         System.out.println(allPatient);
     }
 

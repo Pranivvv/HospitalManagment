@@ -1,5 +1,6 @@
 package com.praniv.HospitalManagement.service;
 
+import com.praniv.HospitalManagement.Dto.AppointmentResponseDto;
 import com.praniv.HospitalManagement.entity.Appointment;
 import com.praniv.HospitalManagement.entity.Doctor;
 import com.praniv.HospitalManagement.entity.Patient;
@@ -9,7 +10,11 @@ import com.praniv.HospitalManagement.repository.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +22,10 @@ public class AppointmentService {
     private final PatientRepository patientRepository;
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
-    public Appointment bookAppointment(Long patientId, Long doctorId, Appointment appointment){
+    public AppointmentResponseDto bookAppointment(Long patientId, Long doctorId, Appointment appointment){
 
         Patient patient = patientRepository.findById(patientId).orElseThrow(()->new EntityNotFoundException("Patient Not Found"));
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(()->new EntityNotFoundException("Patient Not Found"));
@@ -28,7 +34,7 @@ public class AppointmentService {
         appointment.setPatient(patient);
         patient.getAppointment().add(appointment);
         doctor.getAppointment().add(appointment);
-        return appointmentRepository.save(appointment);
+        return modelMapper.map(appointmentRepository.save(appointment), AppointmentResponseDto.class);
     }
 
     @Transactional
@@ -38,5 +44,14 @@ public class AppointmentService {
         appointment.setDoctor(doctor);
         doctor.getAppointment().add(appointment);
         return appointment;
+    }
+
+    public List<AppointmentResponseDto> getAllAppointmentOfDoctor(Long doctorId){
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(()-> new EntityNotFoundException("Doctor id is not valid"));
+
+        return doctor.getAppointment()
+                .stream()
+                .map(appointment -> modelMapper.map(appointment, AppointmentResponseDto.class))
+                .toList();
     }
 }
