@@ -1,6 +1,7 @@
 package com.praniv.HospitalManagement.service;
 
 import com.praniv.HospitalManagement.Dto.AppointmentResponseDto;
+import com.praniv.HospitalManagement.Dto.CreateAppointmentRequestDto;
 import com.praniv.HospitalManagement.entity.Appointment;
 import com.praniv.HospitalManagement.entity.Doctor;
 import com.praniv.HospitalManagement.entity.Patient;
@@ -25,16 +26,25 @@ public class AppointmentService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public AppointmentResponseDto bookAppointment(Long patientId, Long doctorId, Appointment appointment){
+    public AppointmentResponseDto createNewAppointment(CreateAppointmentRequestDto createAppointmentRequestDto) {
+        Long doctorId = createAppointmentRequestDto.getDoctorId();
+        Long patientId = createAppointmentRequestDto.getPatientId();
 
-        Patient patient = patientRepository.findById(patientId).orElseThrow(()->new EntityNotFoundException("Patient Not Found"));
-        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(()->new EntityNotFoundException("Patient Not Found"));
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + patientId));
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found with ID: " + doctorId));
+        Appointment appointment = Appointment.builder()
+                .reason(createAppointmentRequestDto.getReason())
+                .appointmentTime(createAppointmentRequestDto.getAppointmentTime())
+                .build();
 
-        appointment.setDoctor(doctor);
         appointment.setPatient(patient);
-        patient.getAppointment().add(appointment);
-        doctor.getAppointment().add(appointment);
-        return modelMapper.map(appointmentRepository.save(appointment), AppointmentResponseDto.class);
+        appointment.setDoctor(doctor);
+        patient.getAppointment().add(appointment); // to maintain consistency
+
+        appointment = appointmentRepository.save(appointment);
+        return modelMapper.map(appointment, AppointmentResponseDto.class);
     }
 
     @Transactional
